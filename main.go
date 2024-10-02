@@ -7,10 +7,12 @@ import (
 
 func main() {
 
-	models.CreateThread("abc", "third")
+	//models.CreateThread("abc", "5")
 
-	allthreads := models.GetAllThreads()
+	//allthreads := models.GetAllThreads()
 
-	fmt.Println(allthreads)
+	deleted := models.DeleteThread(3)
+
+	fmt.Println(deleted)
 
 }

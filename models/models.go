@@ -56,6 +56,9 @@ func GetByID(id int64) *Threads {
 	return &getTread
 }
 
-// func DeleteThread(id int64) *Threads {
-
-// }
+func DeleteThread(id int64) *Threads {
+	var deleteThread Threads
+	db.Find(&deleteThread, id)
+	db.Delete(&deleteThread, id)
+	return &deleteThread
+}
