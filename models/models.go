@@ -44,10 +44,13 @@ func CreateThread(title string, description string) *Threads {
 
 }
 
-func GetAllThreads() []Threads {
+func GetAllThreads() ([]Threads, error) {
 	var threads []Threads
-	db.Find(&threads)
-	return threads
+	result := db.Find(&threads)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return threads, nil
 }
 
 func GetByID(id int64) *Threads {
