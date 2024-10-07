@@ -1,18 +1,10 @@
 package main
 
-import (
-	"fmt"
-	"go-forum/models"
-)
+import "github.com/gin-gonic/gin"
 
 func main() {
 
-	//models.CreateThread("abc", "5")
+	router := gin.Default()
 
-	//allthreads := models.GetAllThreads()
-
-	deleted := models.DeleteThread(3)
-
-	fmt.Println(deleted)
-
+	router.Run(":8080")
 }
