@@ -10,5 +10,6 @@ func RegisterThreadRoutes(router *gin.Engine) {
 	ThreadRoutes := router.Group("/threads")
 	{
 		ThreadRoutes.GET("/", controllers.GetThreads)
+		ThreadRoutes.GET("/:ID", controllers.GetThreadByID)
 	}
 }

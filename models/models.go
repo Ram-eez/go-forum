@@ -53,10 +53,13 @@ func GetAllThreads() ([]Threads, error) {
 	return threads, nil
 }
 
-func GetByID(id int64) *Threads {
+func GetByID(id int64) (*Threads, error) {
 	var getTread Threads
-	db.Find(&getTread, id)
-	return &getTread
+	result := db.Find(&getTread, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &getTread, nil
 }
 
 func DeleteThread(id int64) *Threads {
