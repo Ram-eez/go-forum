@@ -11,5 +11,7 @@ func RegisterThreadRoutes(router *gin.Engine) {
 	{
 		ThreadRoutes.GET("/", controllers.GetThreads)
 		ThreadRoutes.GET("/:ID", controllers.GetThreadByID)
+		ThreadRoutes.DELETE("/:ID", controllers.DeleteThreadByID)
+		ThreadRoutes.POST("/", controllers.CreateAThread)
 	}
 }

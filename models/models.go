@@ -31,16 +31,19 @@ func init() {
 	}
 }
 
-func CreateThread(title string, description string) *Threads {
+func CreateThread(title string, description string) error {
 	newThread := Threads{
 		Title:       title,
 		Description: description,
 	}
 	result := db.Create(&newThread)
 
-	fmt.Println(result.Error)
-	fmt.Println(result.RowsAffected)
-	return &newThread
+	// fmt.Println(result.Error)
+	// fmt.Println(result.RowsAffected)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
 
 }
 
@@ -62,9 +65,11 @@ func GetByID(id int64) (*Threads, error) {
 	return &getTread, nil
 }
 
-func DeleteThread(id int64) *Threads {
+func DeleteThread(id int64) error {
 	var deleteThread Threads
-	db.Find(&deleteThread, id)
-	db.Delete(&deleteThread, id)
-	return &deleteThread
+	result := db.Delete(&deleteThread, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
 }
