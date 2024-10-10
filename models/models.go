@@ -32,6 +32,7 @@ func init() {
 }
 
 func CreateThread(title string, description string) error {
+
 	newThread := Threads{
 		Title:       title,
 		Description: description,
@@ -48,28 +49,51 @@ func CreateThread(title string, description string) error {
 }
 
 func GetAllThreads() ([]Threads, error) {
+
 	var threads []Threads
 	result := db.Find(&threads)
 	if result.Error != nil {
 		return nil, result.Error
 	}
+
 	return threads, nil
+
 }
 
 func GetByID(id int64) (*Threads, error) {
+
 	var getTread Threads
 	result := db.Find(&getTread, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
+
 	return &getTread, nil
+
 }
 
 func DeleteThread(id int64) error {
+
 	var deleteThread Threads
 	result := db.Delete(&deleteThread, id)
 	if result.Error != nil {
 		return result.Error
 	}
+
 	return nil
+
+}
+
+func UpdateThread(thread *Threads) error {
+
+	result := db.Model(thread).Updates(Threads{
+		Title:       thread.Title,
+		Description: thread.Description,
+	})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+
 }
