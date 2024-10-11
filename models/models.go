@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"go-forum/config"
+	"time"
 
 	"github.com/jinzhu/gorm"
 )
@@ -16,9 +17,17 @@ type User struct {
 }
 
 type Threads struct {
-	ID          int64  `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	ID          int64   `json:"id"`
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Posts       []Posts `json:"posts"`
+}
+
+type Posts struct {
+	ID        int64     `json:"postid"`
+	Content   string    `json:"content"`
+	ThreadID  int64     `json:"thread_id"`
+	CreatedAt time.Time `json:"created_at" gorm:"type:timestamp"`
 }
 
 func init() {
@@ -51,7 +60,7 @@ func CreateThread(title string, description string) error {
 func GetAllThreads() ([]Threads, error) {
 
 	var threads []Threads
-	result := db.Find(&threads)
+	result := db.Preload("Posts").Find(&threads)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -63,7 +72,7 @@ func GetAllThreads() ([]Threads, error) {
 func GetByID(id int64) (*Threads, error) {
 
 	var getTread Threads
-	result := db.Find(&getTread, id)
+	result := db.Preload("Posts").Find(&getTread, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -90,6 +99,22 @@ func UpdateThread(thread *Threads) error {
 		Title:       thread.Title,
 		Description: thread.Description,
 	})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+
+}
+
+func CreatePostDB(content string, threadID int64) error {
+
+	newPost := Posts{
+		Content:   content,
+		ThreadID:  threadID,
+		CreatedAt: time.Now(),
+	}
+	result := db.Create(&newPost)
 	if result.Error != nil {
 		return result.Error
 	}

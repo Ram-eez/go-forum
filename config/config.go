@@ -16,5 +16,5 @@ func Connect() {
 }
 
 func GetDB() *gorm.DB {
-	return db
+	return db.Debug()
 }

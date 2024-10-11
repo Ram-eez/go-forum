@@ -108,3 +108,24 @@ func UpdateAThread(c *gin.Context) {
 	c.JSON(http.StatusOK, thread)
 
 }
+
+func CreatePost(c *gin.Context) {
+
+	var newPost models.Posts
+	if err := c.ShouldBindJSON(&newPost); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if newPost.ThreadID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "thread_id must be provided"})
+		return
+	}
+
+	if err := models.CreatePostDB(newPost.Content, newPost.ThreadID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "post created successfully"})
+
+}

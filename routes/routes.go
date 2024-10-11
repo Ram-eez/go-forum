@@ -14,5 +14,8 @@ func RegisterThreadRoutes(router *gin.Engine) {
 		ThreadRoutes.DELETE("/:ID", controllers.DeleteThreadByID)
 		ThreadRoutes.POST("/", controllers.CreateAThread)
 		ThreadRoutes.PUT("/:ID", controllers.UpdateAThread)
+
+		ThreadRoutes.POST("/:threadID/posts	", controllers.CreatePost)
 	}
+
 }
