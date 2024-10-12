@@ -35,7 +35,7 @@ func init() {
 	db.AutoMigrate(&Threads{}, &Posts{})
 }
 
-func CreateThread(title string, description string) error {
+func CreateThreadDB(title string, description string) error {
 
 	newThread := Threads{
 		Title:       title,
@@ -50,7 +50,7 @@ func CreateThread(title string, description string) error {
 
 }
 
-func GetAllThreads() ([]Threads, error) {
+func GetThreadsDB() ([]Threads, error) {
 
 	var threads []Threads
 	result := db.Preload("Posts").Find(&threads)
@@ -61,7 +61,7 @@ func GetAllThreads() ([]Threads, error) {
 
 }
 
-func GetByID(id int64) (*Threads, error) {
+func GetThreadDB(id int64) (*Threads, error) {
 
 	var getTread Threads
 	result := db.Preload("Posts").Find(&getTread, id)
@@ -73,7 +73,7 @@ func GetByID(id int64) (*Threads, error) {
 
 }
 
-func DeleteThread(id int64) error {
+func DeleteThreadDB(id int64) error {
 
 	result := db.Where("id = ?", id).Delete(&Threads{})
 	if result.Error != nil {
@@ -84,7 +84,7 @@ func DeleteThread(id int64) error {
 
 }
 
-func UpdateThread(thread *Threads) error {
+func UpdateThreadDB(thread *Threads) error {
 
 	result := db.Model(thread).Updates(Threads{
 		Title:       thread.Title,
@@ -98,32 +98,31 @@ func UpdateThread(thread *Threads) error {
 
 }
 
-func CreatePostDB(content string, threadID int64) (Posts, error) {
+func CreatePostDB(post *Posts) error {
 
 	newPost := Posts{
-		Content:   content,
-		ThreadID:  threadID,
+		Content:   post.Content,
+		ThreadID:  post.ThreadID,
 		CreatedAt: time.Now().String(),
 	}
 
 	result := db.Create(&newPost)
 	fmt.Println("New Post ID:", newPost.ID)
 	if result.Error != nil {
-		return Posts{}, result.Error
-	}
-
-	return newPost, nil
-
-}
-
-func DeletePostDB(id int64) error {
-
-	result := db.Where("post_id = ?", id).Delete(&Posts{})
-	if result.Error != nil {
 		return result.Error
 	}
 
 	return nil
+
+}
+
+func GetPostsDB(id int64) ([]Posts, error) {
+	var posts []Posts
+
+	if err := db.Where("thread_id = ?", id).Find(&posts).Error; err != nil {
+		return nil, err
+	}
+	return posts, nil
 }
 
 func GetPostDB(id int64) (*Posts, error) {
@@ -136,6 +135,16 @@ func GetPostDB(id int64) (*Posts, error) {
 	return &post, nil
 }
 
+func DeletePostDB(id int64) error {
+
+	result := db.Where("post_id = ?", id).Delete(&Posts{})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
 func UpdatePostDB(post *Posts) error {
 
 	if err := db.Model(&post).Updates(Posts{
@@ -144,13 +153,4 @@ func UpdatePostDB(post *Posts) error {
 		return err.Error
 	}
 	return nil
-}
-
-func GetPostsDB() ([]Posts, error) {
-	var posts []Posts
-
-	if err := db.Find(&posts).Error; err != nil {
-		return nil, err
-	}
-	return posts, nil
 }
