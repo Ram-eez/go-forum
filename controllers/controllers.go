@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"go-forum/models"
 	"net/http"
 	"strconv"
@@ -22,7 +23,7 @@ func GetThreads(c *gin.Context) {
 
 func GetThreadByID(c *gin.Context) {
 
-	thID := c.Param("ID")
+	thID := c.Param("thread_id")
 	threadID, err := strconv.ParseInt(thID, 0, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -41,7 +42,7 @@ func GetThreadByID(c *gin.Context) {
 
 func DeleteThreadByID(c *gin.Context) {
 
-	thID := c.Param("ID")
+	thID := c.Param("thread_id")
 	threadID, err := strconv.ParseInt(thID, 0, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -79,7 +80,7 @@ func CreateAThread(c *gin.Context) {
 
 func UpdateAThread(c *gin.Context) {
 
-	thID := c.Param("ID")
+	thID := c.Param("thread_id")
 	threadID, err := strconv.ParseInt(thID, 0, 64)
 
 	if err != nil {
@@ -128,6 +129,23 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "post created successfully", "post_id": createdPost.PostID})
+	c.JSON(http.StatusOK, gin.H{"message": "post created successfully", "post_id": createdPost.ID})
 
+}
+
+func DeletePost(c *gin.Context) {
+	th := c.Param("post_id")
+	postID, err := strconv.ParseInt(th, 0, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Printf("Attempting to delete PostID: %d\n", postID)
+
+	if err := models.DeletePostDB(postID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "successfully deleted"})
 }

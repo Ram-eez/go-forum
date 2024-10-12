@@ -10,12 +10,13 @@ func RegisterThreadRoutes(router *gin.Engine) {
 	ThreadRoutes := router.Group("/threads")
 	{
 		ThreadRoutes.GET("/", controllers.GetThreads)
-		ThreadRoutes.GET("/:ID", controllers.GetThreadByID)
-		ThreadRoutes.DELETE("/:ID", controllers.DeleteThreadByID)
+		ThreadRoutes.GET("/:thread_id)", controllers.GetThreadByID)
+		ThreadRoutes.DELETE("/:thread_id", controllers.DeleteThreadByID)
 		ThreadRoutes.POST("/", controllers.CreateAThread)
-		ThreadRoutes.PUT("/:ID", controllers.UpdateAThread)
+		ThreadRoutes.PUT("/:thread_id", controllers.UpdateAThread)
 
-		ThreadRoutes.POST("/:threadID/posts", controllers.CreatePost)
+		ThreadRoutes.POST("/:thread_id/posts", controllers.CreatePost)
+		ThreadRoutes.DELETE("/:thread_id/posts/:post_id", controllers.DeletePost)
 	}
 
 }

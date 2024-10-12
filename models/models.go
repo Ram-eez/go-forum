@@ -11,14 +11,14 @@ import (
 var db *gorm.DB
 
 type Threads struct {
-	ID          int64   `json:"id" gorm:"primary_key;auto_increment"`
+	ID          int64   `json:"id" gorm:"autoIncrement"`
 	Title       string  `json:"title"`
 	Description string  `json:"description"`
 	Posts       []Posts `json:"posts" gorm:"foreignKey:ThreadID"`
 }
 
 type Posts struct {
-	PostID    int64  `json:"postid"  gorm:"primary_key;auto_increment"`
+	ID        int64  `json:"post_id" gorm:"autoIncrement;column:post_id"`
 	Content   string `json:"content"`
 	ThreadID  int64  `json:"thread_id"`
 	CreatedAt string `json:"created_at"`
@@ -32,6 +32,7 @@ func init() {
 	} else {
 		fmt.Println("Database connected successfully")
 	}
+	db.AutoMigrate(&Threads{}, &Posts{})
 }
 
 func CreateThread(title string, description string) error {
@@ -79,8 +80,7 @@ func GetByID(id int64) (*Threads, error) {
 
 func DeleteThread(id int64) error {
 
-	var deleteThread Threads
-	result := db.Delete(&deleteThread, id)
+	result := db.Where("id = ?", id).Delete(&Threads{})
 	if result.Error != nil {
 		return result.Error
 	}
@@ -112,11 +112,21 @@ func CreatePostDB(content string, threadID int64) (Posts, error) {
 	}
 
 	result := db.Create(&newPost)
-	fmt.Println("New Post ID:", newPost.PostID)
+	fmt.Println("New Post ID:", newPost.ID)
 	if result.Error != nil {
 		return Posts{}, result.Error
 	}
 
 	return newPost, nil
 
+}
+
+func DeletePostDB(id int64) error {
+
+	result := db.Where("post_id = ?", id).Delete(&Posts{})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
 }
