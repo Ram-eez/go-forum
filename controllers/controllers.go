@@ -122,10 +122,12 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 
-	if err := models.CreatePostDB(newPost.Content, newPost.ThreadID); err != nil {
+	createdPost, err := models.CreatePostDB(newPost.Content, newPost.ThreadID)
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "post created successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "post created successfully", "post_id": createdPost.PostID})
 
 }

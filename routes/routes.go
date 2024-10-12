@@ -15,7 +15,7 @@ func RegisterThreadRoutes(router *gin.Engine) {
 		ThreadRoutes.POST("/", controllers.CreateAThread)
 		ThreadRoutes.PUT("/:ID", controllers.UpdateAThread)
 
-		ThreadRoutes.POST("/:threadID/posts	", controllers.CreatePost)
+		ThreadRoutes.POST("/:threadID/posts", controllers.CreatePost)
 	}
 
 }

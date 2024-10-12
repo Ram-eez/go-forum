@@ -10,24 +10,18 @@ import (
 
 var db *gorm.DB
 
-type User struct {
-	ID       int64
-	Username string
-	Password string
-}
-
 type Threads struct {
-	ID          int64   `json:"id"`
+	ID          int64   `json:"id" gorm:"primary_key;auto_increment"`
 	Title       string  `json:"title"`
 	Description string  `json:"description"`
-	Posts       []Posts `json:"posts"`
+	Posts       []Posts `json:"posts" gorm:"foreignKey:ThreadID"`
 }
 
 type Posts struct {
-	ID        int64     `json:"postid"`
-	Content   string    `json:"content"`
-	ThreadID  int64     `json:"thread_id"`
-	CreatedAt time.Time `json:"created_at" gorm:"type:timestamp"`
+	PostID    int64  `json:"postid"  gorm:"primary_key;auto_increment"`
+	Content   string `json:"content"`
+	ThreadID  int64  `json:"thread_id"`
+	CreatedAt string `json:"created_at"`
 }
 
 func init() {
@@ -48,8 +42,6 @@ func CreateThread(title string, description string) error {
 	}
 	result := db.Create(&newThread)
 
-	// fmt.Println(result.Error)
-	// fmt.Println(result.RowsAffected)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -61,6 +53,10 @@ func GetAllThreads() ([]Threads, error) {
 
 	var threads []Threads
 	result := db.Preload("Posts").Find(&threads)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -107,18 +103,20 @@ func UpdateThread(thread *Threads) error {
 
 }
 
-func CreatePostDB(content string, threadID int64) error {
+func CreatePostDB(content string, threadID int64) (Posts, error) {
 
 	newPost := Posts{
 		Content:   content,
 		ThreadID:  threadID,
-		CreatedAt: time.Now(),
-	}
-	result := db.Create(&newPost)
-	if result.Error != nil {
-		return result.Error
+		CreatedAt: time.Now().String(),
 	}
 
-	return nil
+	result := db.Create(&newPost)
+	fmt.Println("New Post ID:", newPost.PostID)
+	if result.Error != nil {
+		return Posts{}, result.Error
+	}
+
+	return newPost, nil
 
 }
