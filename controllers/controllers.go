@@ -164,3 +164,29 @@ func GetPostByID(c *gin.Context) {
 
 	c.JSON(http.StatusOK, post)
 }
+
+func UpadtePost(c *gin.Context) {
+	th := c.Param("post_id")
+	postID, err := strconv.ParseInt(th, 0, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	post, err := models.GetPostDB(postID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&post); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := models.UpdatePostDB(post); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "post updates successfully"})
+}

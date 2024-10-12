@@ -140,3 +140,13 @@ func GetPostDB(id int64) (*Posts, error) {
 
 	return &post, nil
 }
+
+func UpdatePostDB(post *Posts) error {
+
+	if err := db.Model(&post).Updates(Posts{
+		Content: post.Content,
+	}); err != nil {
+		return err.Error
+	}
+	return nil
+}
