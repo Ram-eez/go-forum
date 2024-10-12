@@ -57,11 +57,6 @@ func GetAllThreads() ([]Threads, error) {
 	if result.Error != nil {
 		return nil, result.Error
 	}
-
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
 	return threads, nil
 
 }
@@ -133,9 +128,9 @@ func DeletePostDB(id int64) error {
 
 func GetPostDB(id int64) (*Posts, error) {
 	var post Posts
-	result := db.Where("post_id = ?", id).Find(&post)
-	if result.Error != nil {
-		return nil, result.Error
+	result := db.Where("post_id = ?", id).Find(&post).Error
+	if result != nil {
+		return nil, result
 	}
 
 	return &post, nil
@@ -149,4 +144,13 @@ func UpdatePostDB(post *Posts) error {
 		return err.Error
 	}
 	return nil
+}
+
+func GetPostsDB() ([]Posts, error) {
+	var posts []Posts
+
+	if err := db.Find(&posts).Error; err != nil {
+		return nil, err
+	}
+	return posts, nil
 }
