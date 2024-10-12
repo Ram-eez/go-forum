@@ -130,3 +130,13 @@ func DeletePostDB(id int64) error {
 
 	return nil
 }
+
+func GetPostDB(id int64) (*Posts, error) {
+	var post Posts
+	result := db.Where("post_id = ?", id).Find(&post)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &post, nil
+}

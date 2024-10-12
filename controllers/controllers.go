@@ -149,3 +149,18 @@ func DeletePost(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "successfully deleted"})
 }
+
+func GetPostByID(c *gin.Context) {
+	th := c.Param("post_id")
+	postID, err := strconv.ParseInt(th, 0, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	post, err := models.GetPostDB(postID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, post)
+}
