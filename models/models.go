@@ -10,10 +10,20 @@ import (
 
 var db *gorm.DB
 
+type User struct {
+	ID       int64     `json:"id"`
+	Username string    `json:"username"`
+	Email    string    `json:"email"`
+	Password string    `json:"password"`
+	Threads  []Threads `json:"threads" gorm:"foreignKey:UserID"`
+	Posts    []Posts   `json:"posts" gorm:"foreignKey:UserID"`
+}
+
 type Threads struct {
 	ID          int64   `json:"id" gorm:"autoIncrement"`
 	Title       string  `json:"title"`
 	Description string  `json:"description"`
+	UserID      int64   `json:"user_id"`
 	Posts       []Posts `json:"posts" gorm:"foreignKey:ThreadID"`
 }
 
@@ -21,6 +31,7 @@ type Posts struct {
 	ID        int64  `json:"post_id" gorm:"autoIncrement;column:post_id"`
 	Content   string `json:"content"`
 	ThreadID  int64  `json:"thread_id"`
+	UserID    int64  `json:"user_id"`
 	CreatedAt string `json:"created_at"`
 }
 
