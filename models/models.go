@@ -70,6 +70,14 @@ func GetUserDB(id int64) (*User, error) {
 	return &user, nil
 }
 
+func DeleteUserDB(id int64) error {
+	var user User
+	if err := db.Delete(&user, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func CreateThreadDB(newThread Threads) error {
 
 	if err := db.Create(&newThread).Error; err != nil {
