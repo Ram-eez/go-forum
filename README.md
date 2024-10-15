@@ -1,3 +1,4 @@
+```
 -- Table for Users
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -25,3 +26,4 @@ CREATE TABLE posts (
     FOREIGN KEY (thread_id) REFERENCES threads(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+```
