@@ -46,16 +46,26 @@ func init() {
 	db.AutoMigrate(&Threads{}, &Posts{})
 }
 
-func CreateThreadDB(title string, description string) error {
+func CreateUserDB(newUser User) error {
 
-	newThread := Threads{
-		Title:       title,
-		Description: description,
+	if err := db.Create(&newUser).Error; err != nil {
+		return err
 	}
-	result := db.Create(&newThread)
+	return nil
+}
 
-	if result.Error != nil {
-		return result.Error
+func GetUsersDB() ([]User, error) {
+	var users []User
+	if err := db.Preload("Threads.Posts").Preload("Posts").Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func CreateThreadDB(newThread Threads) error {
+
+	if err := db.Create(&newThread).Error; err != nil {
+		return err
 	}
 	return nil
 
@@ -114,6 +124,7 @@ func CreatePostDB(post *Posts) error {
 	newPost := Posts{
 		Content:   post.Content,
 		ThreadID:  post.ThreadID,
+		UserID:    post.UserID,
 		CreatedAt: time.Now().String(),
 	}
 
