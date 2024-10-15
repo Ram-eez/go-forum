@@ -54,12 +54,20 @@ func CreateUserDB(newUser User) error {
 	return nil
 }
 
-func GetUsersDB() ([]User, error) {
+func GetUsersDB() (*[]User, error) {
 	var users []User
 	if err := db.Preload("Threads.Posts").Preload("Posts").Find(&users).Error; err != nil {
 		return nil, err
 	}
-	return users, nil
+	return &users, nil
+}
+
+func GetUserDB(id int64) (*User, error) {
+	var user User
+	if err := db.Preload("Threads.Posts").Preload("Posts").First(&user, id).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 func CreateThreadDB(newThread Threads) error {
