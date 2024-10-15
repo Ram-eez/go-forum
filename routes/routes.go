@@ -29,6 +29,7 @@ func RegisterThreadRoutes(router *gin.Engine) {
 		UserRoutes.GET("/", controllers.GetAllUsers)
 		UserRoutes.GET("/:user_id/", controllers.GetUserByID)
 		UserRoutes.DELETE("/:user_id/", controllers.DeleteUser)
+		UserRoutes.PUT("/:user_id/", controllers.UpdateUser)
 	}
 
 }

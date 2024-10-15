@@ -78,6 +78,22 @@ func DeleteUserDB(id int64) error {
 	return nil
 }
 
+func UpdateUserDB(user *User) error {
+	var existingUser User
+	if err := db.First(&existingUser, user.ID).Error; err != nil {
+		return err
+	}
+
+	if err := db.Model(user).Updates(User{
+		Username: user.Username,
+		Email:    user.Email,
+		Password: user.Password,
+	}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func CreateThreadDB(newThread Threads) error {
 
 	if err := db.Create(&newThread).Error; err != nil {
@@ -123,7 +139,12 @@ func DeleteThreadDB(id int64) error {
 
 func UpdateThreadDB(thread *Threads) error {
 
-	result := db.Model(thread).Updates(Threads{
+	var existingThread Threads
+	if err := db.First(&existingThread, thread.ID).Error; err != nil {
+		return err
+	}
+
+	result := db.Model(&existingThread).Updates(Threads{
 		Title:       thread.Title,
 		Description: thread.Description,
 	})
