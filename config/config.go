@@ -1,14 +1,25 @@
 package config
 
 import (
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 var db *gorm.DB
 
+func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
+
 func Connect() {
-	d, err := gorm.Open("mysql", "root:pass123@/TWITTER")
+	dsn := os.Getenv("DB")
+	d, err := gorm.Open(mysql.Open(dsn))
 	if err != nil {
 		panic(err)
 	}
@@ -16,5 +27,5 @@ func Connect() {
 }
 
 func GetDB() *gorm.DB {
-	return db.Debug()
+	return db
 }

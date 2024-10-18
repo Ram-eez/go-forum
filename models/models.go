@@ -5,7 +5,7 @@ import (
 	"go-forum/config"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var db *gorm.DB
@@ -36,8 +36,9 @@ type Posts struct {
 }
 
 func init() {
+	// config.LoadEnvVariables()
 	config.Connect()
-	db = config.GetDB().Debug()
+	db = config.GetDB()
 	if db == nil {
 		fmt.Println("Database connection failed")
 	} else {
