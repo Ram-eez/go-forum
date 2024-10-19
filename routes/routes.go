@@ -25,7 +25,7 @@ func RegisterThreadRoutes(router *gin.Engine) {
 
 	UserRoutes := router.Group("/users")
 	{
-		UserRoutes.POST("/", controllers.CreateUser)
+		UserRoutes.POST("/", controllers.Signup)
 		UserRoutes.GET("/", controllers.GetAllUsers)
 		UserRoutes.GET("/:user_id/", controllers.GetUserByID)
 		UserRoutes.DELETE("/:user_id/", controllers.DeleteUser)

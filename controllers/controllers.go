@@ -6,16 +6,24 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateUser(c *gin.Context) {
+func Signup(c *gin.Context) {
 	var newUser models.User
 	if err := c.ShouldBindJSON(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	hash, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), 10)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	newUser.ID = 0
+	newUser.Password = string(hash)
 
 	if err := models.CreateUserDB(newUser); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

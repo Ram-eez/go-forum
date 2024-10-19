@@ -14,7 +14,7 @@ type User struct {
 	ID       int64     `json:"id"`
 	Username string    `json:"username"`
 	Email    string    `json:"email"`
-	Password string    `json:"password"`
+	Password string    `json:"-"`
 	Threads  []Threads `json:"threads" gorm:"foreignKey:UserID"`
 	Posts    []Posts   `json:"posts" gorm:"foreignKey:UserID"`
 }
@@ -57,7 +57,7 @@ func CreateUserDB(newUser User) error {
 
 func GetUsersDB() (*[]User, error) {
 	var users []User
-	if err := db.Preload("Threads.Posts").Preload("Posts").Find(&users).Error; err != nil {
+	if err := db.Preload("Threads.Posts").Preload("Posts").Omit("password").Find(&users).Error; err != nil {
 		return nil, err
 	}
 	return &users, nil
@@ -65,7 +65,7 @@ func GetUsersDB() (*[]User, error) {
 
 func GetUserDB(id int64) (*User, error) {
 	var user User
-	if err := db.Preload("Threads.Posts").Preload("Posts").First(&user, id).Error; err != nil {
+	if err := db.Preload("Threads.Posts").Preload("Posts").Omit("password").First(&user, id).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
