@@ -15,21 +15,22 @@ func RegisterThreadRoutes(router *gin.Engine) {
 		ThreadRoutes.POST("/", controllers.CreateThread)
 		ThreadRoutes.PUT("/:thread_id", controllers.UpdateThread)
 
-		ThreadRoutes.POST("/:thread_id/posts/", controllers.CreatePost)
+		ThreadRoutes.POST("/:thread_id/posts", controllers.CreatePost)
 		ThreadRoutes.DELETE("/:thread_id/posts/:post_id", controllers.DeletePost)
 		ThreadRoutes.GET("/:thread_id/posts/:post_id", controllers.GetPostByID)
 		ThreadRoutes.PUT("/:thread_id/posts/:post_id", controllers.UpadtePost)
-		ThreadRoutes.GET("/:thread_id/posts/", controllers.GetAllPosts)
+		ThreadRoutes.GET("/:thread_id/posts", controllers.GetAllPosts)
 
 	}
 
 	UserRoutes := router.Group("/users")
 	{
-		UserRoutes.POST("/", controllers.Signup)
+		UserRoutes.POST("/signup", controllers.Signup)
+		UserRoutes.POST("/login", controllers.Login)
 		UserRoutes.GET("/", controllers.GetAllUsers)
-		UserRoutes.GET("/:user_id/", controllers.GetUserByID)
-		UserRoutes.DELETE("/:user_id/", controllers.DeleteUser)
-		UserRoutes.PUT("/:user_id/", controllers.UpdateUser)
+		UserRoutes.GET("/:user_id", controllers.GetUserByID)
+		UserRoutes.DELETE("/:user_id", controllers.DeleteUser)
+		UserRoutes.PUT("/:user_id", controllers.UpdateUser)
 	}
 
 }

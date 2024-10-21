@@ -71,6 +71,14 @@ func GetUserDB(id int64) (*User, error) {
 	return &user, nil
 }
 
+func GetUserByEmail(email string) (*User, error) {
+	var user User
+	if err := db.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 func DeleteUserDB(id int64) error {
 	var user User
 	if err := db.Delete(&user, id).Error; err != nil {
