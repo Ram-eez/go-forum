@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"go-forum/models"
 	"net/http"
 	"os"
@@ -11,6 +12,11 @@ import (
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
+
+func Validate(c *gin.Context) {
+	user, _ := c.Get("user")
+	c.JSON(http.StatusOK, gin.H{"message": user})
+}
 
 func Signup(c *gin.Context) {
 	var newUser models.User
@@ -49,6 +55,8 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	fmt.Println("Retrieved user:", user)
+
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(newUser.Password)); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid password"})
 		return
@@ -68,7 +76,7 @@ func Login(c *gin.Context) {
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 
-	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
 func GetAllUsers(c *gin.Context) {

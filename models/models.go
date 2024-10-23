@@ -14,7 +14,7 @@ type User struct {
 	ID       int64     `json:"id"`
 	Username string    `json:"username"`
 	Email    string    `json:"email"`
-	Password string    `json:"-"`
+	Password string    `json:"password"`
 	Threads  []Threads `json:"threads" gorm:"foreignKey:UserID"`
 	Posts    []Posts   `json:"posts" gorm:"foreignKey:UserID"`
 }
