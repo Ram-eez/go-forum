@@ -49,7 +49,6 @@ func VerifyToken(c *gin.Context) {
 		}
 
 		c.Set("user", user)
-
 		c.Next()
 	} else {
 		c.AbortWithStatus(http.StatusUnauthorized)

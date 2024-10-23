@@ -9,34 +9,40 @@ import (
 
 func RegisterThreadRoutes(router *gin.Engine) {
 
-	UserRoutes := router.Group("/users")
-	{
-		UserRoutes.POST("/signup", controllers.Signup) // Public route
-		UserRoutes.POST("/login", controllers.Login)   // Public route
-	}
+	//Public routes
+	router.POST("/signup", controllers.Signup)
+	router.POST("/login", controllers.Login)
+	router.GET("/threads", controllers.GetAllThreads)
+	router.GET("/threads/:thread_id", controllers.GetThreadByID)
 
-	protected := router.Group("/")
-	protected.Use(middleware.VerifyToken) // Protect these routes
+	authorized := router.Group("/")
+	authorized.Use(middleware.VerifyToken)
 	{
-		// Protected thread routes
-		ThreadRoutes := protected.Group("/threads")
+		//private routes
+		threads := authorized.Group("/threads")
 		{
-			ThreadRoutes.GET("/", controllers.GetAllThreads)
-			ThreadRoutes.GET("/:thread_id", controllers.GetThreadByID)
-			ThreadRoutes.DELETE("/:thread_id", controllers.DeleteThreadByID)
-			ThreadRoutes.POST("/", controllers.CreateThread)
-			ThreadRoutes.PUT("/:thread_id", controllers.UpdateThread)
+			threads.POST("/", controllers.CreateThread)
+			threads.PUT("/:thread_id", controllers.UpdateThread)
+			threads.DELETE("/:thread_id", controllers.DeleteThreadByID)
 
-			ThreadRoutes.POST("/:thread_id/posts", controllers.CreatePost)
-			ThreadRoutes.DELETE("/:thread_id/posts/:post_id", controllers.DeletePost)
-			ThreadRoutes.GET("/:thread_id/posts/:post_id", controllers.GetPostByID)
-			ThreadRoutes.PUT("/:thread_id/posts/:post_id", controllers.UpadtePost)
-			ThreadRoutes.GET("/:thread_id/posts", controllers.GetAllPosts)
+			posts := threads.Group("/:thread_id/posts")
+			{
+				posts.POST("/", controllers.CreatePost)
+				posts.GET("/", controllers.GetAllPosts)
+				posts.GET("/:post_id", controllers.GetPostByID)
+				posts.PUT("/:post_id", controllers.UpadtePost)
+				posts.DELETE("/:post_id", controllers.DeletePost)
+			}
 		}
-		UserRoutes.GET("/", controllers.GetAllUsers)           // Protected
-		UserRoutes.GET("/:user_id", controllers.GetUserByID)   // Protected
-		UserRoutes.DELETE("/:user_id", controllers.DeleteUser) // Protected
-		UserRoutes.PUT("/:user_id", controllers.UpdateUser)    // Protected
-		UserRoutes.GET("/validate", controllers.Validate)
+
+		users := authorized.Group("/users")
+		{
+			users.GET("/", controllers.GetAllUsers)
+			users.GET("/validate", controllers.Validate)
+			users.GET("/:user_id", controllers.GetUserByID)
+			users.PUT("/:user_id", controllers.UpdateUser)
+
+		}
 	}
+
 }

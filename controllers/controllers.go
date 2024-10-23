@@ -14,7 +14,12 @@ import (
 )
 
 func Validate(c *gin.Context) {
-	user, _ := c.Get("user")
+	user, ok := c.Get("user")
+	if !ok {
+		c.JSON(http.StatusBadRequest, user)
+		return
+	}
+	fmt.Println(user)
 	c.JSON(http.StatusOK, gin.H{"message": user})
 }
 
