@@ -39,7 +39,7 @@ func RegisterThreadRoutes(router *gin.Engine) {
 		{
 			users.GET("/", controllers.GetAllUsers)
 			users.GET("/validate", controllers.Validate)
-			users.GET("/:user_id", controllers.GetUserByID)
+			users.GET("/user", controllers.GetUserByID)
 			users.PUT("/:user_id", controllers.UpdateUser)
 
 		}

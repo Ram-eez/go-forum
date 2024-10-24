@@ -13,6 +13,19 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func GetUserIDFromToken(c *gin.Context) (int64, error) {
+	token, ok := c.Get("user")
+	if !ok {
+		return 0, fmt.Errorf("user not found in context")
+	}
+
+	myUser, ok := token.(*models.User)
+	if !ok {
+		return 0, fmt.Errorf("user data type assertion failed")
+	}
+	return int64(myUser.ID), nil
+}
+
 func Validate(c *gin.Context) {
 	user, ok := c.Get("user")
 	if !ok {
@@ -94,7 +107,7 @@ func GetAllUsers(c *gin.Context) {
 }
 
 func GetUserByID(c *gin.Context) {
-	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	userID, err := GetUserIDFromToken(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -110,7 +123,7 @@ func GetUserByID(c *gin.Context) {
 }
 
 func DeleteUser(c *gin.Context) {
-	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	userID, err := GetUserIDFromToken(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -126,14 +139,13 @@ func DeleteUser(c *gin.Context) {
 
 func UpdateUser(c *gin.Context) {
 
-	var newUser models.User
-	if err := c.ShouldBindJSON(&newUser); err != nil {
+	userID, err := GetUserIDFromToken(c)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-	if err != nil {
+	var newUser models.User
+	if err := c.ShouldBindJSON(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -181,13 +193,20 @@ func GetThreadByID(c *gin.Context) {
 
 func CreateThread(c *gin.Context) {
 
+	userID, err := GetUserIDFromToken(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	var newThread models.Threads
-	err := c.ShouldBindJSON(&newThread)
+	err = c.ShouldBindJSON(&newThread)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
+	newThread.UserID = userID
 	err = models.CreateThreadDB(newThread)
 
 	if err != nil {
