@@ -33,7 +33,7 @@ func Validate(c *gin.Context) {
 		return
 	}
 	fmt.Println(user)
-	c.JSON(http.StatusOK, gin.H{"message": user})
+	c.JSON(http.StatusOK, gin.H{"message": "user is logged in."})
 }
 
 func Signup(c *gin.Context) {
