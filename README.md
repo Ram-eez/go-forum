@@ -19,8 +19,8 @@ A simple and secure forum API built with Golang, Gin, and GORM, using MariaDB as
 
 **Clone the repository**:
    ```sh
-   git clone https://github.com/your-username/forum-api.git
-   cd forum-api
+   git clone https://github.com/Ram-eez/go-forum
+   cd go-forum
 ```
 **Configure environment variables**: Copy .env.example to .env and set your values:
 ```
