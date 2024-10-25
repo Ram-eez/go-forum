@@ -30,7 +30,7 @@ func RegisterThreadRoutes(router *gin.Engine) {
 				posts.POST("/", controllers.CreatePost)
 				posts.GET("/", controllers.GetAllPosts)
 				posts.GET("/:post_id", controllers.GetPostByID)
-				posts.PUT("/:post_id", controllers.UpadtePost)
+				posts.PUT("/:post_id", controllers.UpdatePost)
 				posts.DELETE("/:post_id", controllers.DeletePost)
 			}
 		}
@@ -40,8 +40,8 @@ func RegisterThreadRoutes(router *gin.Engine) {
 			users.GET("/", controllers.GetAllUsers)
 			users.GET("/validate", controllers.Validate)
 			users.GET("/user", controllers.GetUserByID)
-			users.PUT("/:user_id", controllers.UpdateUser)
-
+			users.PUT("/update", controllers.UpdateUser)
+			users.DELETE("/delete", controllers.DeleteUser)
 		}
 	}
 

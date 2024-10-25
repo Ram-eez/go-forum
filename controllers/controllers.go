@@ -109,7 +109,7 @@ func GetAllUsers(c *gin.Context) {
 func GetUserByID(c *gin.Context) {
 	userID, err := GetUserIDFromToken(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access"})
 		return
 	}
 
@@ -125,7 +125,7 @@ func GetUserByID(c *gin.Context) {
 func DeleteUser(c *gin.Context) {
 	userID, err := GetUserIDFromToken(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access"})
 		return
 	}
 
@@ -141,7 +141,7 @@ func UpdateUser(c *gin.Context) {
 
 	userID, err := GetUserIDFromToken(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access"})
 		return
 	}
 	var newUser models.User
@@ -195,7 +195,7 @@ func CreateThread(c *gin.Context) {
 
 	userID, err := GetUserIDFromToken(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access"})
 		return
 	}
 
@@ -219,6 +219,12 @@ func CreateThread(c *gin.Context) {
 
 func DeleteThreadByID(c *gin.Context) {
 
+	userID, err := GetUserIDFromToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access"})
+		return
+	}
+
 	thID := c.Param("thread_id")
 	threadID, err := strconv.ParseInt(thID, 0, 64)
 	if err != nil {
@@ -226,9 +232,19 @@ func DeleteThreadByID(c *gin.Context) {
 		return
 	}
 
-	err = models.DeleteThreadDB(threadID)
+	thread, err := models.GetThreadDB(threadID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	if thread.UserID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to delete this thread"})
+		return
+	}
+
+	err = models.DeleteThreadDB(threadID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete thread"})
 		return
 	}
 
@@ -237,6 +253,12 @@ func DeleteThreadByID(c *gin.Context) {
 }
 
 func UpdateThread(c *gin.Context) {
+
+	userID, err := GetUserIDFromToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access"})
+		return
+	}
 
 	thID := c.Param("thread_id")
 	threadID, err := strconv.ParseInt(thID, 0, 64)
@@ -251,6 +273,12 @@ func UpdateThread(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
+
+	if thread.UserID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to delete this thread"})
+		return
+	}
+
 	err = c.ShouldBindJSON(&thread)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -308,11 +336,19 @@ func GetPostByID(c *gin.Context) {
 
 func CreatePost(c *gin.Context) {
 
+	userID, err := GetUserIDFromToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access"})
+		return
+	}
+
 	var newPost models.Posts
 	if err := c.ShouldBindJSON(&newPost); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	newPost.UserID = userID
 
 	thID, err := strconv.ParseInt(c.Param("thread_id"), 10, 64)
 	if err != nil {
@@ -334,10 +370,27 @@ func CreatePost(c *gin.Context) {
 
 func DeletePost(c *gin.Context) {
 
+	userID, err := GetUserIDFromToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access"})
+		return
+	}
+
 	th := c.Param("post_id")
 	postID, err := strconv.ParseInt(th, 0, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	post, err := models.GetPostDB(postID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	if post.UserID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to delete this thread"})
 		return
 	}
 
@@ -350,7 +403,13 @@ func DeletePost(c *gin.Context) {
 
 }
 
-func UpadtePost(c *gin.Context) {
+func UpdatePost(c *gin.Context) {
+
+	userID, err := GetUserIDFromToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access"})
+		return
+	}
 
 	th := c.Param("post_id")
 	postID, err := strconv.ParseInt(th, 0, 64)
@@ -362,6 +421,11 @@ func UpadtePost(c *gin.Context) {
 	post, err := models.GetPostDB(postID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	if post.UserID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to delete this thread"})
 		return
 	}
 
