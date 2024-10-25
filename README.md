@@ -17,7 +17,7 @@ A simple and secure forum API built with Golang, Gin, and GORM, using MariaDB as
 - Git
 - Go modules enabled
 
--> **Clone the repository**:
+**Clone the repository**:
    ```sh
    git clone https://github.com/your-username/forum-api.git
    cd forum-api
@@ -35,7 +35,7 @@ go mod tidy
 ```go
 go run main.go
 ```
-##Database Schema :
+## Database Schema :
 ```
 -- Table for Users
 CREATE TABLE users (
